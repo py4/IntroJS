@@ -2,9 +2,6 @@
  * Created by py4_ on 4/22/16.
  */
 
-//module.exports = function(Storage) {
-
-
     var path = require('path');
     var Recipe = require('./recipe').Recipe;
     //var Storage = require('./storage').Storage;
@@ -32,6 +29,14 @@
         }
         console.log(this.recipes);
     };
-//};
+
+RecipeContainer.prototype.show_recipes = function() {
+    var keys = Object.keys(this.recipes).sort();
+    for(var i in keys) {
+        process.stdout.write(i.toString() + this.recipes[keys[i]].stringify());
+    }
+}
+
+
 
 exports.RecipeContainer = RecipeContainer;

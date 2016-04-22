@@ -43,6 +43,9 @@ Core.prototype.listen = function() {
                             case 'ingredients':
                                 obj.handle_show_ingredients();
                                 break;
+                            case 'recipes':
+                                obj.handle_show_recipes();
+                                break;
                             default:
                                 obj.handle_not_found();
                         }
@@ -92,6 +95,10 @@ Core.prototype.authenticate_user = function() {
 Core.prototype.handle_show_ingredients = function() {
     Storage.ingredient_container.show_ingredients();
 };
+
+Core.prototype.handle_show_recipes = function() {
+    Storage.recipe_container.show_recipes();
+}
 
 
 
