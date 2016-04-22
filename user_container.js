@@ -10,7 +10,7 @@ var UserContrainer = function(users_path) {
 }
 
 UserContrainer.prototype.load_users = function(users_path) {
-    var arr = require(path.join(__dirname, 'data', 'users.json'));
+    var arr = require(path.join(__dirname, users_path));
     for(var i in arr) {
         var username = arr[i].username;
         this.users[username] = new User(username, arr[i].password);
