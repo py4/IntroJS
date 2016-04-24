@@ -16,7 +16,7 @@ Utils.sort_string_dates = function(arr) {
     });
 };
 
-Utils.parse_shipments = function(line) {
+Utils.parse_shipments = function(line, item_parser) {
     var shipments = [];
     var shipment = "";
     var in_shipment = false;
@@ -27,7 +27,8 @@ Utils.parse_shipments = function(line) {
         }
         if(line[i] == [']']) {
             in_shipment = false;
-            shipments.push(Utils.parse_shipment(shipment));
+            //shipments.push(Utils.parse_shipment(shipment));
+            shipments.push(item_parser(shipment));
             shipment = "";
         }
         if(in_shipment)
@@ -43,6 +44,24 @@ Utils.parse_shipment = function(string) {
         'count': parseInt(tokens[1].trim()),
         'base_price': parseInt(tokens[2].trim())
     };
+};
+
+Utils.parse_menu_item = function(string) {
+    var tokens = string.split(',');
+    return {
+        'day': tokens[0].substring(1, tokens[0].length - 1),
+        'food_name': tokens[1].trim().substring(1, tokens[1].length - 2),
+        'food_price': parseInt(tokens[2].trim())
+    };
+};
+
+Utils.get_next_sat = function() {
+    var now = new Date();
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 6 - now.getDay()
+    );
 };
 
 exports.Utils = Utils;

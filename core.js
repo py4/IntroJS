@@ -54,7 +54,10 @@ Core.prototype.listen = function() {
                         obj.handle_estimation({'name': args[2], 'count': args[1]});
                         break;
                     case 'shipment':
-                        obj.handle_add_shipment(Utils.parse_shipments(command));
+                        obj.handle_add_shipment(Utils.parse_shipments(command, Utils.parse_shipment));
+                        break;
+                    case 'menu':
+                        obj.handle_add_menu(Utils.parse_shipments(command, Utils.parse_menu_item));
                         break;
                     default:
                         obj.handle_not_found();
@@ -115,10 +118,31 @@ Core.prototype.handle_estimation = function(params) {
 };
 
 Core.prototype.handle_add_shipment = function(arr) {
-    process.stdout.write("value before:  "+Storage.ingredient_container.get_total_value().toString()+"\n");
     for(var i in arr)
         Storage.ingredient_container.add_shipment(arr[i].name, "", arr[i].count, arr[i].base_price);
     process.stdout.write("present warehouse value: "+Storage.ingredient_container.get_total_value().toString()+"\n");
+};
+
+Core.prototype.handle_add_menu = function(arr) {
+    result = "";
+    Storage.weekly_menu_container.create_next_week();
+    for(var i in arr)
+        Storage.weekly_menu_container.add_food(arr[i].day, arr[i].food_name, arr[i].food_price);
+
+    var details = Storage.weekly_menu_container.get_next_menu().details;
+    var days = ["SAT", "SUN", "MON", "THU", "WED", "THU", "FRI"];
+    for(var i in days) {
+        var day = days[i];
+        result += day + "\n";
+        if(details[day]) {
+            var keys = Object.keys(details[day]);
+            keys.sort();
+            for(var i in keys)
+                result += "- " + keys[i] + " (" + details[day][keys[i]].price.toString() + ")" + "\n";
+        } else
+            result += "-\n";
+    }
+    process.stdout.write(result);
 };
 
 
