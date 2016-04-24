@@ -57,7 +57,10 @@ Core.prototype.listen = function() {
                         obj.handle_add_shipment(Utils.parse_shipments(command, Utils.parse_shipment));
                         break;
                     case 'menu':
-                        obj.handle_add_menu(Utils.parse_shipments(command, Utils.parse_menu_item));
+                        if(command.indexOf("repeat") == -1)
+                            obj.handle_add_menu(Utils.parse_shipments(command, Utils.parse_menu_item));
+                        else
+                            obj.handle_repeat_menu();
                         break;
                     default:
                         obj.handle_not_found();
@@ -143,6 +146,10 @@ Core.prototype.handle_add_menu = function(arr) {
             result += "-\n";
     }
     process.stdout.write(result);
+};
+
+Core.prototype.handle_repeat_menu = function() {
+    Storage.weekly_menu_container.repeat_menu();
 };
 
 
