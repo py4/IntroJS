@@ -50,6 +50,9 @@ Core.prototype.listen = function() {
                                 obj.handle_not_found();
                         }
                         break;
+                    case 'estimate':
+                        obj.handle_estimation({'name': args[2], 'count': args[1]});
+                        break;
                     default:
                         obj.handle_not_found();
                 }
@@ -98,7 +101,15 @@ Core.prototype.handle_show_ingredients = function() {
 
 Core.prototype.handle_show_recipes = function() {
     Storage.recipe_container.show_recipes();
-}
+};
+
+Core.prototype.handle_estimation = function(params) {
+    var report = Storage.recipe_container.estimate_for(params.name, params.count);
+    var result = "ingredient\trequired\tavailable\tpurchase price\n";
+    for(name in report)
+        result += name + "\t" + report[name]['required'].toString() + "\t" + report[name]['available'].toString() + "\t" + report[name]['purchase price'].toString() + "\n";
+    process.stdout.write(result);
+};
 
 
 

@@ -40,13 +40,21 @@ IngredientContainer.prototype.has_enough = function(name, amount) {
         return this.ingredients[name].has_enough(amount);
 };
 
+IngredientContainer.prototype.how_many = function(name) {
+    return this.ingredients[name].how_many();
+}
+
 IngredientContainer.prototype.price_for = function(name, amount, should_pull) {
     return this.ingredients[name].price_for(amount, should_pull);
-}
+};
 
 IngredientContainer.prototype.pull = function(name, amount) {
     return this.ingredients[name].pull(amount);
 };
+
+IngredientContainer.prototype.how_much_for_new = function(name, amount) {
+    return this.ingredients[name].how_much_for_new(amount);
+}
 
 
 exports.IngredientContainer = IngredientContainer;

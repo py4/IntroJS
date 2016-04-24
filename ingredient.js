@@ -47,6 +47,14 @@ Ingredient.prototype.price_for = function(num, should_pull) {
     }
 };
 
+Ingredient.prototype.how_many = function() {
+    return this.total_count;
+};
+
+Ingredient.prototype.how_much_for_new = function(count) {
+    return count * this.ingredient_shipments[this.ingredient_shipments.length - 1].base_price;
+};
+
 exports.Ingredient = Ingredient;
 
 

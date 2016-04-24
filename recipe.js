@@ -24,4 +24,8 @@ Recipe.prototype.stringify = function() {
     return result;
 };
 
+Recipe.prototype.get_ingredients = function() {
+    return this.ingredients;
+};
+
 exports.Recipe = Recipe;
