@@ -14,12 +14,5 @@
 					 { "ingred" : {"name" : "black-pepper"} ,"amount" : 1},
 					 { "ingred" : {"name" : "ginger"} , "amount" : 4}
 				]
-	},
-  {
-    "name": "kotshet",
-    "recipe": [
-      {"ingred": {"name": "havij"}, "amount": 3},
-      {"ingred": {"name": "khiar"}, "amount": 3}
-    ]
-  }
+	}
 ]

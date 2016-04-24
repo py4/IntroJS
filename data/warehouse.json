@@ -37,30 +37,6 @@
       "amount" : 250,
       "price" : 665
     }
-  ],
-  "4-4-2012": [
-    {
-      "ingredient": {"name": "havij"},
-      "amount": 2,
-      "price": 100
-    },
-    {
-      "ingredient": {"name": "khiar"},
-      "amount": 2,
-      "price": 1000
-    }
-  ],
-  "5-5-2011": [
-    {
-      "ingredient": {"name": "havij"},
-      "amount": 2,
-      "price": 50
-    },
-    {
-      "ingredient": {"name": "khiar"},
-      "amount": 2,
-      "price": 500
-    }
   ]
 }
 

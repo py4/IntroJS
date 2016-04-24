@@ -7,7 +7,7 @@ var Core = function(users_path, shipments_path, recipe_path) {
     //var Storage = require('./storage').Storage;
     Storage.init(users_path, shipments_path, recipe_path);
     this.current_user = null;
-}
+};
 
 Core.prototype.listen = function() {
     var readline = require('readline');
@@ -16,22 +16,22 @@ Core.prototype.listen = function() {
         output: process.stdout
     });
 
-    var fetchCommand = function(obj) {
+    var fetchCommand = function (obj) {
         var prefix = "[Anonymous]";
-        if(obj.current_user)
-            prefix = "["+obj.current_user+"]";
+        if (obj.current_user)
+            prefix = "[" + obj.current_user + "]";
 
-        rl.question(prefix + " -> ", function(command) {
-            if (command == "exit"){
+        rl.question(prefix + " -> ", function (command) {
+            if (command == "exit") {
                 rl.close();
             } else {
                 args = command.split(' ');
-                if(args[0] != 'login' && args[0] != 'logout')
-                    if(!obj.authenticate_user()) {
+                if (args[0] != 'login' && args[0] != 'logout')
+                    if (!obj.authenticate_user()) {
                         process.stdout.write("Not authorized!\n");
                         return fetchCommand(obj);
                     }
-                switch(args[0]) {
+                switch (args[0]) {
                     case 'login':
                         obj.handle_login({'username': args[1], 'password': args[2]});
                         break;
@@ -39,7 +39,7 @@ Core.prototype.listen = function() {
                         obj.handle_logout();
                         break;
                     case 'show':
-                        switch(args[1]) {
+                        switch (args[1]) {
                             case 'ingredients':
                                 obj.handle_show_ingredients();
                                 break;
@@ -53,6 +53,9 @@ Core.prototype.listen = function() {
                     case 'estimate':
                         obj.handle_estimation({'name': args[2], 'count': args[1]});
                         break;
+                    case 'shipment':
+                        obj.handle_add_shipment(Utils.parse_shipments(command));
+                        break;
                     default:
                         obj.handle_not_found();
                 }
@@ -60,10 +63,10 @@ Core.prototype.listen = function() {
                 fetchCommand(obj);
             }
         });
-    }
+    };
 
     fetchCommand(this);
-}
+};
 
 Core.prototype.handle_login = function(params) {
     if(this.current_user)
@@ -93,7 +96,7 @@ Core.prototype.authenticate_user = function() {
     if(this.current_user)
         return true;
     return false;
-}
+};
 
 Core.prototype.handle_show_ingredients = function() {
     Storage.ingredient_container.show_ingredients();
@@ -109,6 +112,13 @@ Core.prototype.handle_estimation = function(params) {
     for(name in report)
         result += name + "\t" + report[name]['required'].toString() + "\t" + report[name]['available'].toString() + "\t" + report[name]['purchase price'].toString() + "\n";
     process.stdout.write(result);
+};
+
+Core.prototype.handle_add_shipment = function(arr) {
+    process.stdout.write("value before:  "+Storage.ingredient_container.get_total_value().toString()+"\n");
+    for(var i in arr)
+        Storage.ingredient_container.add_shipment(arr[i].name, "", arr[i].count, arr[i].base_price);
+    process.stdout.write("present warehouse value: "+Storage.ingredient_container.get_total_value().toString()+"\n");
 };
 
 
