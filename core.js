@@ -78,6 +78,10 @@ Core.prototype.listen = function() {
                     case 'reserve':
                         obj.handle_reservation({'day':args[1], 'food_name':args[2]});
                         break;
+                    case 'finalize':
+                        if(args[1] === "reservations")
+                            obj.handle_finalize_reservation();
+                        break;
                     default:
                         obj.handle_not_found();
                 }
@@ -241,5 +245,8 @@ Core.prototype.handle_show_reservation = function(args) {
     else this.handle_user_show_reservation();
 };
 
+Core.prototype.handle_finalize_reservation = function() {
+    process.stdout.write(Storage.weekly_menu_container.finalize_next_week());
+};
 
 exports.Core = Core;

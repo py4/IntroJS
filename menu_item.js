@@ -24,5 +24,15 @@ MenuItem.prototype.show_reservations_str = function() {
     }
     return result;
 };
+MenuItem.prototype.get_reservations_count = function() {
+    var count = 0, uname;
+    for (uname in this.reservations) {
+       count++;
+    }
+    return count;
+};
 
+MenuItem.prototype.get_total_sell_price = function() {
+    return this.get_reservations_count() * this.price;
+};
 exports.MenuItem = MenuItem;

@@ -49,5 +49,24 @@ WeeklyMenu.prototype.show_reservations_str = function(day) {
         return "No reservations are made";
     return result;
 };
+WeeklyMenu.prototype.finalize_menu = function() {
+    var total = {}, sold = 0;
+    for(d in this.details) {
+        for (food_name in this.details[d]) {
+            if (!total[food_name])
+                total[food_name] = 0;
+            total[food_name] += this.details[d][food_name].get_reservations_count();
+            sold += this.details[d][food_name].get_total_sell_price();
+        }
+    }
+    var result = "";
+    for( food_name in total) {
+        result += food_name + ": " + total[food_name] + "\n";
+    }
+    result += "cost: ???\n";
+    result += "sold: " + sold + "\n";
+    result += "profit: ??? (???%)\n";
+    return result;
+};
 
 exports.WeeklyMenu = WeeklyMenu;

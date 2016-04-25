@@ -63,4 +63,11 @@ WeeklyMenuContainer.prototype.show_reservation_str = function(day) {
     return this.get_next_menu().show_reservations_str(day);
 };
 
+WeeklyMenuContainer.prototype.finalize_next_week = function() {
+    var result = "";
+    if (!this.has_next_week())
+        return "There is no menu for next week\n";
+    return this.get_next_menu().finalize_menu();
+}
+
 exports.WeeklyMenuContainer = WeeklyMenuContainer;
