@@ -48,5 +48,19 @@ WeeklyMenuContainer.prototype.confirm_menu = function() {
 WeeklyMenuContainer.prototype.can_alter_menu = function() {
     return this.has_next_week() && !this.confirmed_next_week();
 };
+WeeklyMenuContainer.prototype.can_reserve = function() {
+    return this.has_next_week() && this.confirmed_next_week();
+};
+WeeklyMenuContainer.prototype.add_reservation = function(username, day, food_name) {
+    //@returns uuid of reservation
+    //@returns false on failure
+    return this.get_next_menu().add_reservation(username, day, food_name);
+};
+
+WeeklyMenuContainer.prototype.show_reservation_str = function(day) {
+    if (!this.has_next_week())
+        return "There is no menu for next week\n";
+    return this.get_next_menu().show_reservations_str(day);
+};
 
 exports.WeeklyMenuContainer = WeeklyMenuContainer;

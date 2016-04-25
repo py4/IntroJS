@@ -64,4 +64,8 @@ Utils.get_next_sat = function() {
     );
 };
 
+var uuid = require('node-uuid');
+Utils.get_uuid = function () {
+    return uuid.v1();//time based
+}
 exports.Utils = Utils;

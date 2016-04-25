@@ -6,7 +6,8 @@ Storage = require('./storage').Storage;
 var Core = function(users_path, shipments_path, recipe_path) {
     //var Storage = require('./storage').Storage;
     Storage.init(users_path, shipments_path, recipe_path);
-    this.current_user = "admin";
+    //this.current_user = "admin";
+    this.current_user = null;
 };
 
 Core.prototype.listen = function() {
@@ -46,6 +47,12 @@ Core.prototype.listen = function() {
                             case 'recipes':
                                 obj.handle_show_recipes();
                                 break;
+                            case "menu":
+                                obj.handle_show_menu();
+                                break;
+                            case "reservations":
+                                obj.handle_show_reservation(args);
+                                break;
                             default:
                                 obj.handle_not_found();
                         }
@@ -67,6 +74,9 @@ Core.prototype.listen = function() {
                     case 'confirm':
                         if(args[1] === "menu")
                             obj.handle_confirm_menu();
+                        break;
+                    case 'reserve':
+                        obj.handle_reservation({'day':args[1], 'food_name':args[2]});
                         break;
                     default:
                         obj.handle_not_found();
@@ -137,6 +147,10 @@ Core.prototype.handle_add_shipment = function(arr) {
 };
 
 Core.prototype.handle_show_menu = function() {
+    if (!Storage.weekly_menu_container.has_next_week()) {
+        process.stdout.write("There is no menu for next week!\n");
+        return;
+    }
     var result = "";
     var details = Storage.weekly_menu_container.get_next_menu().details;
     var days = ["SAT", "SUN", "MON", "THU", "WED", "THU", "FRI"];
@@ -186,6 +200,45 @@ Core.prototype.handle_confirm_menu = function() {
         Storage.weekly_menu_container.confirm_menu();
         process.stdout.write("menu confirmed\n");
     }
+};
+
+/***************************USER CMDS*******************/
+Core.prototype.get_curr_user = function() {
+    if (!this.current_user)
+        return null;
+    return Storage.user_contrainer.get_user(this.current_user);
+};
+
+Core.prototype.handle_reservation = function(params) {
+    if(!Storage.weekly_menu_container.can_reserve()) {
+        process.stdout.write("can't reserve : menu not confirmed\n");
+        return;
+    }
+
+        var uuid  = Storage.weekly_menu_container.add_reservation(this.current_user, params.day, params.food_name);
+    if (uuid === false)
+            process.stdout.write("can't reserve: there is a problem with the selected food.\n");
+    else {
+        this.get_curr_user().add_reservation(uuid, params);
+        process.stdout.write("refrence:" + uuid +" \n");
+    }
+};
+
+Core.prototype.handle_user_show_reservation = function() {
+    process.stdout.write(this.get_curr_user().show_reservation_str());
+};
+
+Core.prototype.is_curr_admin = function() {
+    return !!this.current_user && Storage.user_contrainer.is_privileged(this.current_user);
+}
+
+Core.prototype.handle_show_reservation = function(args) {
+    if (this.is_curr_admin()) {
+        if (args[2] === "-d")
+            var day = args[3];
+        process.stdout.write(Storage.weekly_menu_container.show_reservation_str(day));
+    }
+    else this.handle_user_show_reservation();
 };
 
 
