@@ -6,7 +6,7 @@ Storage = require('./storage').Storage;
 var Core = function(users_path, shipments_path, recipe_path) {
     //var Storage = require('./storage').Storage;
     Storage.init(users_path, shipments_path, recipe_path);
-    this.current_user = null;
+    this.current_user = "admin";
 };
 
 Core.prototype.listen = function() {
@@ -27,9 +27,9 @@ Core.prototype.listen = function() {
             } else {
                 args = command.split(' ');
                 if (args[0] != 'login' && args[0] != 'logout')
-                    if (!obj.authenticate_user()) {
+                    if (!obj.authenticate_user(args)) {
                         process.stdout.write("Not authorized!\n");
-                        return fetchCommand(obj);
+                        return fetchCommand(obj);//@esihaj : why another fetch command ?
                     }
                 switch (args[0]) {
                     case 'login':
@@ -57,10 +57,16 @@ Core.prototype.listen = function() {
                         obj.handle_add_shipment(Utils.parse_shipments(command, Utils.parse_shipment));
                         break;
                     case 'menu':
-                        if(command.indexOf("repeat") == -1)
+                        if(command.indexOf("-repeat") == -1)
                             obj.handle_add_menu(Utils.parse_shipments(command, Utils.parse_menu_item));
-                        else
+                        else {
+                            console.log("repeated!");
                             obj.handle_repeat_menu();
+                        }
+                        break;
+                    case 'confirm':
+                        if(args[1] === "menu")
+                            obj.handle_confirm_menu();
                         break;
                     default:
                         obj.handle_not_found();
@@ -97,11 +103,15 @@ Core.prototype.handle_not_found = function() {
     process.stdout.write("Command not found!\n");
 };
 
-Core.prototype.authenticate_user = function() {
+Core.prototype.authenticate_user = function(action) {
+    var privileged_cmds = ["estimate", "shipment", "menu", "confirm", "finalize"];
+    var privileged_show_cmds = ["ingredients", "recipes"];
+    if(!this.current_user) //if not signed in
+        return false;
+    if (privileged_cmds.indexOf(action[0]) !== -1 ||
+                    (action[0] === "show" && privileged_show_cmds.indexOf(action[1]) !==-1) ) // if trying an admin cmd
+        return  Storage.user_contrainer.is_privileged(this.current_user);
     return true;
-    if(this.current_user)
-        return true;
-    return false;
 };
 
 Core.prototype.handle_show_ingredients = function() {
@@ -126,12 +136,8 @@ Core.prototype.handle_add_shipment = function(arr) {
     process.stdout.write("present warehouse value: "+Storage.ingredient_container.get_total_value().toString()+"\n");
 };
 
-Core.prototype.handle_add_menu = function(arr) {
-    result = "";
-    Storage.weekly_menu_container.create_next_week();
-    for(var i in arr)
-        Storage.weekly_menu_container.add_food(arr[i].day, arr[i].food_name, arr[i].food_price);
-
+Core.prototype.handle_show_menu = function() {
+    var result = "";
     var details = Storage.weekly_menu_container.get_next_menu().details;
     var days = ["SAT", "SUN", "MON", "THU", "WED", "THU", "FRI"];
     for(var i in days) {
@@ -148,10 +154,39 @@ Core.prototype.handle_add_menu = function(arr) {
     process.stdout.write(result);
 };
 
-Core.prototype.handle_repeat_menu = function() {
-    Storage.weekly_menu_container.repeat_menu();
+Core.prototype.handle_add_menu = function(arr) {
+    Storage.weekly_menu_container.create_next_week();
+    if(!this.can_alter_menu())
+        reuturn;
+
+    for(var i in arr)
+        Storage.weekly_menu_container.add_food(arr[i].day, arr[i].food_name, arr[i].food_price);
+    this.handle_show_menu();
+};
+Core.prototype.can_alter_menu = function() {
+    if(!Storage.weekly_menu_container.can_alter_menu()) {
+        process.stdout.write("Can't Alter menu: Menu is confirmed\n");
+        return false;
+    }
+    return true;
 };
 
+Core.prototype.handle_repeat_menu = function() {
+    if (!Storage.weekly_menu_container.repeat_menu()) {
+        if(!this.can_alter_menu())
+            return;
+        else process.stdout.write("There is no previous menu\n");
+    }
+
+    else this.handle_show_menu();
+};
+
+Core.prototype.handle_confirm_menu = function() {
+    if(this.can_alter_menu()) {
+        Storage.weekly_menu_container.confirm_menu();
+        process.stdout.write("menu confirmed\n");
+    }
+};
 
 
 exports.Core = Core;

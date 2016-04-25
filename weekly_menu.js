@@ -16,8 +16,8 @@ WeeklyMenu.prototype.add_reservation = function(username, day, food_name) {
     this.details[day][food_name].add_reservation(username);
 };
 
-WeeklyMenu.prototype.confirmed = function() {
-    return this.confirmed;
+WeeklyMenu.prototype.confirm = function() {
+    this.confirmed = true;
 };
 
 WeeklyMenu.prototype.has_item_in = function(day) {

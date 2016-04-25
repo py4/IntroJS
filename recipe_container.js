@@ -24,7 +24,7 @@
                     recipe.add_ingredient(name, ingredient.amount, total_price);
                 }
                 else
-                    process.stdout.write("Not enought ingredients for this recipe! \n");
+                    process.stdout.write("Not enough ingredients for this recipe! \n");
             }
         }
         console.log(this.recipes);

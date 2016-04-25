@@ -7,6 +7,7 @@ var User = require('./user').User;
 var UserContrainer = function(users_path) {
     this.users = {}
     this.load_users(users_path);
+    this.init_admin();
 }
 
 UserContrainer.prototype.load_users = function(users_path) {
@@ -15,6 +16,9 @@ UserContrainer.prototype.load_users = function(users_path) {
         var username = arr[i].username;
         this.users[username] = new User(username, arr[i].password);
     }
+}
+UserContrainer.prototype.init_admin = function () {
+    this.users["admin"] = new User("admin", "password", true);
 }
 
 UserContrainer.prototype.get_users = function() {
@@ -31,6 +35,10 @@ UserContrainer.prototype.user_exists = function(username) {
 
 UserContrainer.prototype.valid_cred = function(username, password) {
     return this.user_exists(username) && this.get_user(username).password == password;
+}
+
+UserContrainer.prototype.is_privileged = function(username) {
+    return this.user_exists(username) && this.get_user(username).is_admin;
 }
 
 exports.UserContrainer = UserContrainer;
